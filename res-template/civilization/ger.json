@@ -1,0 +1,25 @@
+{
+  "_comment": [
+    "v4.2.0 文明变体示例(日耳曼)。",
+    "默认按 game 的文明文化簇(civsGroups: European/Chinese/Arabian/…)拼接;",
+    "本文件可按「具体文明」覆盖指定兵种的模型/挂件/装配,优先级高于 loadSelect.json 的 group。",
+    "只写需要覆盖的字段;未列出的兵种继续走 loadSelect.json。",
+    "文件名 ger.json 对应文明 tag(小写);新增文明直接复制本文件改名即可。"
+  ],
+  "civ": "ger",
+  "group": "German",
+  "enabled": true,
+  "loadSelect": {
+    "1:Spearmen": { "default": "foot_euro_medieval" },
+    "3:Archer": { "default": "foot_euro_medieval" }
+  },
+  "attachments": {
+    "1:Spearmen": { "default": ["unit_weapon_spear_long"] }
+  },
+  "assembly": {
+    "_comment": "预留:按部件拆分后,这里指定本体/头/脚/挂件的组合与配色。",
+    "body": "euro_medieval",
+    "head": "euro_helm_01",
+    "feet": "euro_boots_01"
+  }
+}

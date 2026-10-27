@@ -1,0 +1,22 @@
+# ---------------------------------------------------------------------------
+# Local build outputs / caches: never commit (they also embed absolute paths).
+# ---------------------------------------------------------------------------
+build/
+out/
+bin/
+.gradle/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# third-party classes bundled from libGDX (fetch from your GDX release)
+libs/g3dclasses/
+
+# local backups / logs
+src-backup-*/
+*.log
+
+# IDE / local environment
+.idea/
+*.iml
+local.properties

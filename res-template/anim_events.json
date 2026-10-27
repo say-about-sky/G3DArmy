@@ -1,0 +1,257 @@
+{
+  "_comment": [
+    "v4.2.0 动画事件 / 最小状态机配置(攻击粒子用;目前仅预留,插件读入后按 weapons/presets 驱动)。",
+    "时间全部是「动画绝对秒」;超过实际动画时长的事件会被自动丢弃(filter t < AnimationController.current.duration)。",
+    "place = EU5 的 hierarchy_place(locator)。当前 g3dj 不导出 locator,place 仅作记录;",
+    "  实际锚点走 locatorFallback(weapon_tip=武器部件尖端 / grip=骨原点 / bbox_front=包围盒前缘)。",
+    "preset 见本文件末尾 presets;animSets 对应 models/assembly.json 的 animSets 键。"
+  ],
+  "enabled": true,
+  "particleScale": 1,
+  "particleRate": 1,
+  "particleMax": 256,
+  "locatorFallback": "weapon_tip",
+  "battleHoldMs": 1200,
+
+  "stateMachine": {
+    "_comment": [
+      "把游戏四态(idle/move/battle/retreat)映射成 EU5 UnitState;先 Idle→Attack 等时间线播完,",
+      "Attack→Move/Idle 立即切换;进入 Idle/Move/Retreat 时随机相位(randomPhase=true)避免同兵种齐步。",
+      "transitions 里 when 是条件表达式(state=当前 UnitState,tlEnd=当前时间线是否播完)。"
+    ],
+    "unitState": {
+      "idle": 0,
+      "attack": 1,
+      "move": 2,
+      "retreat": 3,
+      "charge": 4
+    },
+    "randomPhase": true,
+    "transitions": {
+      "Idle": [
+        { "to": "Move", "when": "state==2" },
+        { "to": "Charge", "when": "state==4" },
+        { "to": "Retreat", "when": "state==3" },
+        { "to": "Attack", "when": "state==1 && tlEnd" }
+      ],
+      "Attack": [
+        { "to": "Move", "when": "state==2" },
+        { "to": "Retreat", "when": "state==3" },
+        { "to": "Idle", "when": "state!=1" }
+      ],
+      "Move": [
+        { "to": "Idle", "when": "state!=2" }
+      ],
+      "Retreat": [
+        { "to": "Idle", "when": "state!=3" }
+      ],
+      "Charge": [
+        { "to": "Idle", "when": "state!=4" }
+      ]
+    }
+  },
+
+  "weapons": {
+    "musket": {
+      "animSets": ["musket", "musket_r"],
+      "durationSource": "animation",
+      "stateMachineDuration": 15.266954,
+      "animDuration": 13.0,
+      "loop": true,
+      "events": [
+        { "t": 0.268203, "preset": "stop", "place": "vfx_loc_01" },
+        { "t": 0.268203, "preset": "stop", "place": "vfx_loc_02" },
+        { "t": 1.543444, "preset": "musket_ignite", "place": "vfx_loc_02", "atGrip": true },
+        { "t": 1.661597, "preset": "musket_muzzle", "place": "vfx_loc_01" }
+      ],
+      "audio": [
+        { "t": 1.4614, "id": "wpn_gun_fire" },
+        { "t": 8.738428, "id": "wpn_gun_reload" }
+      ]
+    },
+    "arquebus": {
+      "animSets": ["arquebus"],
+      "durationSource": "animation",
+      "stateMachineDuration": 10.534,
+      "events": [
+        { "t": 0.7, "preset": "musket_ignite", "place": "vfx_loc_02", "atGrip": true },
+        { "t": 0.78, "preset": "musket_muzzle", "place": "vfx_loc_01" }
+      ]
+    },
+    "handgonne": {
+      "animSets": ["handgonne"],
+      "durationSource": "animation",
+      "stateMachineDuration": 16.0,
+      "events": [
+        { "t": 0.133, "preset": "musket_muzzle", "place": "vfx_loc_01" },
+        { "t": 5.452, "preset": "stop", "place": "vfx_loc_01" },
+        { "t": 14.9, "preset": "musket_ignite", "place": "vfx_loc_02", "atGrip": true }
+      ]
+    },
+    "pistol": {
+      "animSets": ["pistol"],
+      "durationSource": "animation",
+      "stateMachineDuration": 7.633,
+      "events": [
+        { "t": 0.681, "preset": "stop", "place": "vfx_loc_01" },
+        { "t": 1.43, "preset": "musket_ignite", "place": "vfx_loc_02", "atGrip": true },
+        { "t": 1.53, "preset": "musket_muzzle", "place": "vfx_loc_01" }
+      ]
+    },
+    "bow": {
+      "animSets": ["bow", "bow_r"],
+      "durationSource": "animation",
+      "stateMachineDuration": 4.467,
+      "animDuration": 3.967,
+      "events": [
+        { "t": 1.241, "preset": "bow_release", "place": "arrow" },
+        { "t": 2.922, "preset": "stop", "place": "arrow" }
+      ]
+    },
+    "crossbow": {
+      "animSets": ["crossbow"],
+      "durationSource": "animation",
+      "stateMachineDuration": 10.333,
+      "events": [
+        { "t": 0.286, "preset": "bow_release", "place": "bolt" },
+        { "t": 9.733, "preset": "stop", "place": "bolt" }
+      ]
+    },
+    "sword": {
+      "animSets": ["sword", "sword_r"],
+      "durationSource": "animation",
+      "stateMachineDuration": 3.1,
+      "events": [
+        { "t": 0.185, "preset": "melee_sparks" },
+        { "t": 0.916, "preset": "melee_sparks" },
+        { "t": 1.509, "preset": "melee_sparks" },
+        { "t": 2.003, "preset": "melee_sparks" },
+        { "t": 2.559, "preset": "melee_sparks" }
+      ]
+    },
+    "spear": {
+      "animSets": ["spear", "spear_r"],
+      "durationSource": "animation",
+      "stateMachineDuration": 3.434,
+      "events": [
+        { "t": 0.64, "preset": "melee_sparks" },
+        { "t": 1.8, "preset": "melee_sparks" },
+        { "t": 2.95, "preset": "melee_sparks" }
+      ]
+    },
+    "pike": {
+      "animSets": ["pike"],
+      "durationSource": "animation",
+      "stateMachineDuration": 2.134,
+      "events": [
+        { "t": 0.185, "preset": "melee_sparks" },
+        { "t": 0.916, "preset": "melee_sparks" },
+        { "t": 1.509, "preset": "melee_sparks" },
+        { "t": 2.003, "preset": "melee_sparks" }
+      ]
+    },
+    "polearm": {
+      "animSets": ["polearm"],
+      "durationSource": "animation",
+      "stateMachineDuration": 4.934,
+      "events": [
+        { "t": 0.433, "preset": "melee_sparks" },
+        { "t": 2.021, "preset": "melee_sparks" },
+        { "t": 3.621, "preset": "melee_sparks" },
+        { "t": 4.093, "preset": "melee_sparks" }
+      ]
+    },
+    "two_handed_spear": {
+      "animSets": ["two_handed_spear"],
+      "durationSource": "animation",
+      "stateMachineDuration": 3.567,
+      "events": [
+        { "t": 0.504, "preset": "melee_sparks" },
+        { "t": 1.28, "preset": "melee_sparks" },
+        { "t": 2.157, "preset": "melee_sparks" },
+        { "t": 3.085, "preset": "melee_sparks" }
+      ]
+    },
+    "two_handed_sword": {
+      "animSets": ["two_handed_sword"],
+      "durationSource": "animation",
+      "stateMachineDuration": 8.734,
+      "events": [
+        { "t": 0.655, "preset": "melee_sparks" },
+        { "t": 2.827, "preset": "melee_sparks" },
+        { "t": 4.733, "preset": "melee_sparks" },
+        { "t": 6.592, "preset": "melee_sparks" }
+      ]
+    },
+    "cannon": {
+      "animSets": ["artillery", "artillery_field_canon", "artillery_mortar"],
+      "durationSource": "animation",
+      "stateMachineDuration": 10.0,
+      "events": [
+        { "t": 0.7, "preset": "cannon_muzzle", "place": "muzzle" },
+        { "t": 7.058, "preset": "stop", "place": "muzzle" },
+        { "t": 9.5, "preset": "cannon_fuse", "place": "fuse" }
+      ]
+    },
+    "ship_cannon": {
+      "animSets": ["ship"],
+      "durationSource": "animation",
+      "stateMachineDuration": 7.433,
+      "events": [
+        { "t": 1.27, "preset": "cannon_muzzle", "place": "ship_port" },
+        { "t": 2.21, "preset": "cannon_muzzle", "place": "ship_port" },
+        { "t": 3.15, "preset": "cannon_muzzle", "place": "ship_port" },
+        { "t": 0.531, "preset": "ship_wake", "place": "water" }
+      ]
+    }
+  },
+
+  "presets": {
+    "_comment": "尺寸是世界单位(worldH=2.2 时 0.1 ≈ 屏幕高 4.5%);blend: alpha|add。",
+    "musket_muzzle": {
+      "burst": [
+        { "kind": "flash", "count": 1, "life": 0.09, "size0": 0.06, "size1": 0.15, "color0": "#FFF6C8", "color1": "#FFB347", "blend": "add", "forward": 0.55, "up": 0.28 },
+        { "kind": "glow", "count": 1, "life": 0.18, "size0": 0.09, "size1": 0.24, "color0": "#FFB066", "color1": "#7A3C10", "blend": "add", "forward": 0.5, "up": 0.25 },
+        { "kind": "smoke", "count": 5, "life": 0.65, "size0": 0.06, "size1": 0.24, "color0": "#9A9A96", "color1": "#5A5A58", "blend": "alpha", "forward": 0.55, "up": 0.28, "spread": 0.05 },
+        { "kind": "spark", "count": 2, "life": 0.16, "size0": 0.012, "size1": 0.0, "color0": "#FFE08A", "color1": "#FF7A2A", "blend": "add", "forward": 0.8, "up": 0.3, "gravity": 7 }
+      ]
+    },
+    "musket_ignite": {
+      "burst": [
+        { "kind": "smoke", "count": 2, "life": 0.18, "size0": 0.02, "size1": 0.06, "color0": "#FFA040", "color1": "#7A3C10", "blend": "add", "up": 0.25, "spread": 0.02 }
+      ]
+    },
+    "melee_sparks": {
+      "burst": [
+        { "kind": "spark", "count": 7, "life": 0.2, "size0": 0.013, "size1": 0.0, "color0": "#FFE07A", "color1": "#C23020", "blend": "add", "spread": 0.08, "up": 0.1, "gravity": 7 },
+        { "kind": "smoke", "count": 2, "life": 0.3, "size0": 0.02, "size1": 0.05, "color0": "#8E8E8A", "color1": "#4A4A48", "blend": "alpha", "spread": 0.04 }
+      ]
+    },
+    "cannon_muzzle": {
+      "burst": [
+        { "kind": "flash", "count": 1, "life": 0.14, "size0": 0.14, "size1": 0.34, "color0": "#FFF0C0", "color1": "#FF9A3C", "blend": "add", "forward": 0.9, "up": 0.35 },
+        { "kind": "smoke", "count": 9, "life": 0.85, "size0": 0.1, "size1": 0.38, "color0": "#6E6E6A", "color1": "#3A3A38", "blend": "alpha", "forward": 0.9, "up": 0.35, "spread": 0.12 },
+        { "kind": "spark", "count": 3, "life": 0.22, "size0": 0.016, "size1": 0.0, "color0": "#FFDC8A", "color1": "#FF6A20", "blend": "add", "forward": 1.0, "up": 0.4, "gravity": 6 }
+      ]
+    },
+    "cannon_fuse": {
+      "burst": [
+        { "kind": "smoke", "count": 2, "life": 0.25, "size0": 0.02, "size1": 0.05, "color0": "#FFB060", "color1": "#6A3010", "blend": "add", "up": 0.2 }
+      ]
+    },
+    "bow_release": {
+      "burst": [
+        { "kind": "smoke", "count": 2, "life": 0.25, "size0": 0.02, "size1": 0.06, "color0": "#9A9A96", "color1": "#5A5A58", "blend": "alpha", "forward": 0.4, "up": 0.15 }
+      ]
+    },
+    "ship_wake": {
+      "burst": [
+        { "kind": "smoke", "count": 3, "life": 0.6, "size0": 0.08, "size1": 0.2, "color0": "#CFE6F0", "color1": "#7FA0B0", "blend": "alpha", "up": 0.05, "spread": 0.2 }
+      ]
+    },
+    "stop": {
+      "_comment": "EU5 的 particle stop:清理上一轮循环的持续粒子(一次性 burst 不需要)。",
+      "burst": []
+    }
+  }
+}

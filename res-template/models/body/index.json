@@ -1,0 +1,10 @@
+{
+  "_comment": [
+    "v4.2.0 预留:按部件拆分的「本体(body)」模型索引。",
+    "为以后 models/<类>/{g3d,png} 分件拼装做准备;当前可为空,插件只在有内容时启用。",
+    "结构:{ \"parts\": { \"<部件名>\": { \"file\":\"x.g3dj\", \"mount\":{\"bone\":\"...\",\"mode\":\"skin|official\",\"offset\":[x,y,z],\"rot\":[x,y,z]}, \"place\":{\"t\":[..],\"r\":[..],\"s\":[..]}, \"bbox\":[minx,miny,minz,maxx,maxy,maxz] } } }"
+  ],
+  "generated": "2026-10-19",
+  "count": 0,
+  "parts": {}
+}

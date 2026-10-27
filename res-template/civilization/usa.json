@@ -1,0 +1,23 @@
+{
+  "_comment": [
+    "v4.2.0 文明变体示例(美利坚/新大陆)。",
+    "示例用途:新大陆文明在后期等级仍然用原住民/火枪混搭时,可在这里固定模型。",
+    "assembly 段落是给「按部件拆分」预留的:body/head/feet 分别指向 models/<类> 下的模型名。"
+  ],
+  "civ": "usa",
+  "group": "Native",
+  "enabled": true,
+  "loadSelect": {
+    "0:Warior": { "default": "foot_native_ancient" },
+    "3:Archer": { "default": "foot_native_ancient" }
+  },
+  "attachments": {
+    "0:Warior": { "default": ["unit_weapon_sword_metal", "unit_weapon_shield_viking_round"] },
+    "3:Archer": { "default": ["unit_weapon_bow_wood"] }
+  },
+  "assembly": {
+    "body": "native_ancient",
+    "head": "native_head_01",
+    "feet": "native_boots_01"
+  }
+}
