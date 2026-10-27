@@ -1,5 +1,16 @@
 # G3DArmy — 3D 兵模(拼装兵模 + 伪3D地图适配)
 
+> **简介**:把兵牌换成**拼装 3D 兵模**(libGDX g3d) —— 按文化 / 宗教 / 时代 / 科技 / 兵种拼装,
+> 支持陆海过渡、行军朝向、近大远小与伪3D地图倾斜适配;纯热插件,不改游戏类。
+>
+> **快速开始**:① 运行 `build.bat` → ② `out\G3DArmy-4.9.14.jar` → ③ 丢进 `hotplugins\`,
+> 在游戏的「附加包/插件」面板加载;改 `setting.json` 后点「全部重载」生效。
+> **依赖**(不进版本库):JDK 11+、`game.jar`、`HotPluginLoader-0.2.0.jar`、`libs\g3dclasses\`。
+> **许可**:GPL-3.0,见 `LICENSE.TXT`。
+> **隐私**:纯本地运行,不联网、不收集数据;配置与日志都在 `hotplugins\` 本地。
+>
+> 配置项与逐版本记录见下文。
+
 > **v3.0.1 = HotG3DArmyTest(v2.1.0)+ HotG3DArmyPseudo3DMapVersion(v1.10.0)合并**
 > —— 保留拼装兵模/主兵种选择/陆海过渡/骨骼自适应,并加入伪3D地图(Pseudo3DMap)适配。
 > 包名/插件 id 已改为 `com.saysky.g3darmy`,产物 = `G3DArmy-<版本>.jar`。
