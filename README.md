@@ -3,10 +3,10 @@
 > **简介**:把兵牌换成**拼装 3D 兵模**(libGDX g3d) —— 按文化 / 宗教 / 时代 / 科技 / 兵种拼装,
 > 支持陆海过渡、行军朝向、近大远小与伪3D地图倾斜适配;纯热插件,不改游戏类。
 >
-> **快速开始**:① 运行 `build.ps1`(一键:自动备宿主 jar、缺 `libs\g3dclasses` 时从 gdx 1.12.1 提取)→
+> **快速开始**:① `gradlew.bat shadowJar`(纯 Gradle:`extractG3d` 自动从 gdx 1.12.1 提取 `g3d` 类,宿主 jar 自动定位)→
 > ② `out\G3DArmy-4.9.14.jar` → ③ 丢进 `hotplugins\`,在游戏的「附加包/插件」面板加载;改 `setting.json` 后点「全部重载」生效。
-> （依赖都已备好时也可直接跑 `build.bat`；可用 `-GameRoot <游戏目录>` / `AOH_GAME_ROOT` 指定游戏根）
-> **依赖**(不进版本库):JDK 11+、`game.jar`、`HotPluginLoader-0.2.0.jar`、`libs\g3dclasses\`。
+> （也可双击 `build.bat`；路径可用 `AOH_GAME_ROOT` / `-PgameRoot=` / `-PhostJar=` 指定）
+> **依赖**(不进版本库):JDK 11+、`game.jar`;Gradle 依赖(`com.badlogicgames.gdx:gdx:1.12.1`、shadow 插件)首次构建自动下载(阿里云镜像)。
 > **许可**:GPL-3.0,见 `LICENSE.TXT`。
 > **隐私**:纯本地运行,不联网、不收集数据;配置与日志都在 `hotplugins\` 本地。
 >
@@ -507,9 +507,9 @@ u = clamp01( ln(currentScale / 锚点) / ln(6) )          // 锚点 = 兵模开�
 
 ## 用法与限制
 
-> **构建前置(不进版本库)**:`libs\g3dclasses\`(libGDX g3d 类)、游戏本体 `game.jar` 与宿主
-> `HotPluginLoader-*.jar` 需自备。`build.bat` 默认把上一级目录当游戏根、用 `JAVA_HOME`(或
-> `C:\Program Files\...\jdk-*`)定位 JDK,也可用环境变量 `AOH_GAME_ROOT` / `JAVA_HOME` 覆盖。
+> **构建前置(不进版本库)**:游戏本体 `game.jar` 与宿主 `HotPluginLoader-*.jar` 需自备;libGDX `g3d`
+> 类由 Gradle 依赖 `com.badlogicgames.gdx:gdx:1.12.1` 自动提取(`extractG3d` → `build\g3dclasses`)。
+> 游戏根默认取上一级目录,可用环境变量 `AOH_GAME_ROOT` 或 `-PgameRoot=` / `-PhostJar=` / `-PgameJar=` 覆盖。
 
 1. `build.bat` → 把 `out\G3DArmy-3.0.1.jar` 放进 `hotplugins\`(**删掉旧版 HotG3DArmyTest/HotG3DArmyPseudo3DMapVersion 的 jar**);
    进对局后**拉近视角**(scale ≥ 0.4/0.5 或进入框选模式)出现兵模(默认全部部队);

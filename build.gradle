@@ -1,0 +1,102 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'com.saysky'
+version = '4.9.14'
+
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    mavenCentral()
+}
+
+// ---------------------------------------------------------------------------
+// 路径解析（全部在 Gradle 内完成）
+//   AOH_GAME_ROOT / -PgameRoot   含 game.jar 的游戏根（默认本工程上一级）
+//   -PhostJar / 自动发现         HotPluginLoader 的宿主 jar
+// ---------------------------------------------------------------------------
+def gameRoot = System.getenv('AOH_GAME_ROOT') ?: findProperty('gameRoot') ?: rootDir.parentFile
+def gameJar = file("${gameRoot}/game.jar")
+
+def hostJarProp = findProperty('hostJar') as String
+def hostJar = hostJarProp ? file(hostJarProp) : (file("${gameRoot}/HotPluginLoader/build/libs")
+        .listFiles()
+        ?.findAll { it.name.startsWith('HotPluginLoader-') && it.name.endsWith('.jar') }
+        ?.sort { a, b -> b.lastModified() <=> a.lastModified() }
+        ?.find { true })
+
+sourceSets {
+    main {
+        java { srcDirs = ['src'] }
+        resources { srcDirs = [] }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// libGDX g3d 类：从官方 gdx 1.12.1 提取 com/badlogic/gdx/graphics/g3d/**
+// （游戏内 gdx 可能不含 g3d，需要随插件打包）
+// ---------------------------------------------------------------------------
+configurations {
+    gdxG3d
+}
+
+dependencies {
+    gdxG3d 'com.badlogicgames.gdx:gdx:1.12.1'
+
+    compileOnly files(gameJar)
+    if (hostJar != null) {
+        compileOnly files(hostJar)
+    }
+    implementation files(layout.buildDirectory.dir('g3dclasses'))
+}
+
+def g3dDir = layout.buildDirectory.dir('g3dclasses')
+
+tasks.register('extractG3d') {
+    description = 'Extract com/badlogic/gdx/graphics/g3d from gdx 1.12.1 into build/g3dclasses'
+    inputs.files(configurations.gdxG3d)
+    outputs.dir(g3dDir)
+    doLast {
+        def out = g3dDir.get().asFile
+        delete(out)
+        out.mkdirs()
+        configurations.gdxG3d.files.findAll { it.name.endsWith('.jar') }.each { jar ->
+            copy {
+                from(zipTree(jar)) { include 'com/badlogic/gdx/graphics/g3d/**' }
+                into out
+            }
+        }
+    }
+}
+
+tasks.named('compileJava') {
+    dependsOn tasks.named('extractG3d')
+    doFirst {
+        if (!gameJar.exists()) {
+            throw new GradleException("game.jar not found: ${gameJar}\n" +
+                    "  put your own game.jar in the game folder, or set AOH_GAME_ROOT / -PgameRoot=<game dir>")
+        }
+        if (hostJar == null || !hostJar.exists()) {
+            throw new GradleException('HotPluginLoader jar not found\n' +
+                    '  build it first (HotPluginLoader\\gradlew.bat shadowJar) or pass -PhostJar=<jar>')
+        }
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+jar { enabled = false }
+shadowJar {
+    dependsOn tasks.named('extractG3d')
+    archiveFileName = "G3DArmy-${version}.jar"
+    destinationDirectory = file("$projectDir/out")
+    archiveClassifier.set("")
+}
