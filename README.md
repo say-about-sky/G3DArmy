@@ -12,6 +12,23 @@
 >
 > 配置项与逐版本记录见下文。
 
+### 构建加速（国内网络）
+
+- 镜像顺序：阿里云 `gradle-plugin` → 阿里云 `public` → 阿里云 `google` → 华为云 → `mavenCentral()`（兜底）。
+  实测：阿里云 gdx 9.3 MB/s、Maven Central 0.2 MB/s；Gradle Plugin Portal 单个 POM 1.9 s → 阿里云 0.14 s。
+- `gradle.properties` 已开 `daemon / parallel / caching / vfs.watch` + 2 GB 堆，增量构建 1~3 s。
+- Gradle 发行包走腾讯云镜像（3.7 MB/s）。
+
+### IntelliJ IDEA 运行/调试配置
+
+`.run\` 内的配置打开工程即生效：
+
+| 配置 | 类型 | 作用 |
+|---|---|---|
+| 构建 jar（gradle shadowJar） | Gradle | 出 `out\G3DArmy-<版本>.jar` |
+| 调试游戏（桌面 JDWP 5005） | Remote JVM Debug | 先 `StartFinality-jdwp.bat` 启动游戏再 Debug |
+| 调试游戏（安卓 adb 8700） | Remote JVM Debug | `adb forward tcp:8700 jdwp:<pid>` 后 Debug |
+
 > **v3.0.1 = HotG3DArmyTest(v2.1.0)+ HotG3DArmyPseudo3DMapVersion(v1.10.0)合并**
 > —— 保留拼装兵模/主兵种选择/陆海过渡/骨骼自适应,并加入伪3D地图(Pseudo3DMap)适配。
 > 包名/插件 id 已改为 `com.saysky.g3darmy`,产物 = `G3DArmy-<版本>.jar`。
