@@ -12,7 +12,7 @@ if not defined JDK for /d %%D in ("C:\Program Files\Java\jdk-*") do set "JDK=%%D
 if defined AOH_GAME_ROOT set "GAMEDIR=%AOH_GAME_ROOT%"
 if not defined GAMEDIR for %%I in ("%~dp0..") do set "GAMEDIR=%%~fI"
 set GAMEJAR=%GAMEDIR%\game.jar
-set HOSTJAR=%GAMEDIR%\HotPluginLoader\build\libs\HotPluginLoader-0.2.0.jar
+if not defined HOSTJAR for %%F in ("%GAMEDIR%\HotPluginLoader\build\libs\HotPluginLoader-*.jar") do set "HOSTJAR=%%~fF"
 
 cd /d "%~dp0"
 
