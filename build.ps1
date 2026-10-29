@@ -110,5 +110,4 @@ $jar = @(Get-ChildItem -LiteralPath (Join-Path $proj "out") -Filter "*.jar" -Err
 if ($jar.Count -eq 0) { Fail "no jar produced under out\" }
 Write-Host ""
 Write-Host ("[OK] " + $jar[0].FullName + "  (" + $jar[0].Length + " bytes)")
-Write-Host "Deploy: copy the jar into <game>\hotplugins\ and load it in game"
 exit 0
