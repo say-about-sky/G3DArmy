@@ -11,7 +11,8 @@ bin/
 
 # third-party classes bundled from libGDX (fetch from your GDX release)
 libs/g3dclasses/
-
+G3DArmy/node_global
+G3DArmy/node_cache
 # local backups / logs
 src-backup-*/
 *.log
